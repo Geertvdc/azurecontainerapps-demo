@@ -97,7 +97,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az deployment group create -g "globo-tickets" -f ./aca/main.bicep \
+            az deployment group create -g "globo-tickets" -f ./infra/main.bicep \
              -p \
                 frontendImage='${{ needs.package-services.outputs.containerImage-frontend }}' \
                 catalogImage='${{ needs.package-services.outputs.containerImage-catalog }}' \
