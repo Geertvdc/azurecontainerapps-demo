@@ -107,3 +107,73 @@ module ordering 'containerApp-app.bicep' = {
     ]
   }
 }
+
+module cosmosdb 'cosmos.bicep' = {
+  name: '${appName}-cosmosdb'
+  params: {
+    accountName: '${appName}-cosmos'
+    location: location
+    primaryRegion: location
+  }
+}
+
+module pubsub 'pubsub.bicep' =  {
+  name: '${appName}-bus'
+  params: {
+    busName: '${appName}Bus'
+    location: location
+  }
+}
+
+resource daprcatalogsecret 'Microsoft.App/managedEnvironments/daprComponents@2022-03-01' = {
+  name: '${appName}/secretstore'
+  dependsOn: [
+    environment
+  ]
+  properties: {
+    componentType: 'secretstores.local.env'
+    version: 'v1'
+    secrets: [
+      {
+        name: 'catalogconnectionstring'
+        value: 'testconnectionstring'
+      }
+    ]
+  }
+}
+
+resource shopstateComponent 'Microsoft.App/managedEnvironments/daprComponents@2022-03-01' = {
+  name: '${appName}/shopstate'
+  dependsOn: [
+    environment
+  ]
+  properties: {
+    componentType: 'state.azure.cosmosdb'
+    version: 'v1'
+    secrets: [
+      {
+        name: 'masterkey'
+        value: cosmosdb.outputs.primaryMasterKey
+      }
+    ]
+    metadata: [
+      {
+        name: 'url'
+        value: cosmosdb.outputs.documentEndpoint
+      }
+      {
+        name: 'database'
+        value: 'basketDb'
+      }
+      {
+        name: 'collection'
+        value: 'baskets'
+      }
+      {
+        name: 'masterkey'
+        value: cosmosdb.outputs.primaryMasterKey
+      }
+    ]
+  }
+}
+
