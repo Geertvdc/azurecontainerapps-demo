@@ -18,11 +18,11 @@ builder.Services.AddApplicationInsightsTelemetry();
 builder.WebHost.ConfigureAppConfiguration(config =>
 {
     var daprClient = new DaprClientBuilder().Build();
-    var secretDescriptors = new List<DaprSecretDescriptor>
-    {
-        new DaprSecretDescriptor("catalogconnectionstring")
-    };
-    config.AddDaprSecretStore("secretstore", secretDescriptors, daprClient);
+    // var secretDescriptors = new List<DaprSecretDescriptor>
+    // {
+    //     new DaprSecretDescriptor("catalogconnectionstring")
+    // };
+    // config.AddDaprSecretStore("secretstore", secretDescriptors, daprClient);
 });
 builder.Services.Configure<CatalogOptions>(builder.Configuration);
 

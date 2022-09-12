@@ -73,7 +73,8 @@ public class ConcertRepository : IConcertRepository
 
     private string GetConnectionString()
     {
-        return options?.Value?.CatalogConnectionString ?? String.Empty;
+        return "";
+        //return options?.Value?.CatalogConnectionString ?? String.Empty;
     }
 
     public Task<Concert> GetConcertById(Guid concertId)

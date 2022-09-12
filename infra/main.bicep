@@ -125,23 +125,6 @@ module pubsub 'pubsub.bicep' =  {
   }
 }
 
-resource daprcatalogsecret 'Microsoft.App/managedEnvironments/daprComponents@2022-03-01' = {
-  name: '${appName}/secretstore'
-  dependsOn: [
-    environment
-  ]
-  properties: {
-    componentType: 'secretstores.local.env'
-    version: 'v1'
-    secrets: [
-      {
-        name: 'catalogconnectionstring'
-        value: 'testconnectionstring'
-      }
-    ]
-  }
-}
-
 resource shopstateComponent 'Microsoft.App/managedEnvironments/daprComponents@2022-03-01' = {
   name: '${appName}/shopstate'
   dependsOn: [
