@@ -1,6 +1,9 @@
 name: Build and Deploy
 on:
   push:
+    branches:
+      - 'dapr'
+      - 'dockercompose'
     paths:
       - 'frontend/*'
       - 'catalog/*'
