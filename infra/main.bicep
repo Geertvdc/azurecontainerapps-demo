@@ -25,7 +25,7 @@ module environment 'containerApp-environment.bicep' = {
 module frontend 'containerApp-app.bicep' = {
   name: '${deployment().name}-frontendApp'
   params: {
-    containerAppName: '${appName}-frontend'
+    containerAppName: 'frontend'
     environmentId: environment.outputs.environmentId
     location: location
     ingressIsExternal: true
@@ -53,13 +53,17 @@ module frontend 'containerApp-app.bicep' = {
         value: ordering.outputs.url
       }
     ]
+    scaling: {
+        minReplicas: 1
+        maxReplicas: 1
+    }
   }
 }
 
 module catalog 'containerApp-app.bicep' = {
   name: '${deployment().name}-catalogApp'
   params: {
-    containerAppName: '${appName}-catalog'
+    containerAppName: 'catalog'
     environmentId: environment.outputs.environmentId
     location: location
     ingressIsExternal: false
@@ -79,13 +83,17 @@ module catalog 'containerApp-app.bicep' = {
         value: 'Development'
       }
     ]
+    scaling: {
+        minReplicas: 1
+        maxReplicas: 1
+    }
   }
 }
 
 module ordering 'containerApp-app.bicep' = {
   name: '${deployment().name}-orderingApp'
   params: {
-    containerAppName: '${appName}-ordering'
+    containerAppName: 'ordering'
     environmentId: environment.outputs.environmentId
     location: location
     ingressIsExternal: false
@@ -105,6 +113,10 @@ module ordering 'containerApp-app.bicep' = {
         value: 'Development'
       }
     ]
+    scaling: {
+        minReplicas: 0
+        maxReplicas: 1
+    }
   }
 }
 
@@ -160,3 +172,20 @@ resource shopstateComponent 'Microsoft.App/managedEnvironments/daprComponents@20
   }
 }
 
+
+resource pubsubComponent 'Microsoft.App/managedEnvironments/daprComponents@2022-03-01' = {
+  name: '${appName}/pubsub'
+  dependsOn: [
+    environment
+  ]
+  properties: {
+    componentType: 'pubsub.azure.servicebus'
+    version: 'v1'
+    metadata: [
+      {
+        name: 'connectionString'
+        value: pubsub.outputs.serviceBusConnectionString
+      }
+    ]
+  }
+}

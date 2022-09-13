@@ -14,6 +14,8 @@ param environmentVariables array
 
 param secrets array = []
 
+param scaling object
+
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
   location: location
@@ -47,10 +49,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
           env: environmentVariables
         }
       ]
-      scale: {
-        minReplicas: 1
-        maxReplicas: 1
-      }
+      scale: scaling
     }
   }
 }
