@@ -1,11 +1,11 @@
 ﻿@model GloboTicket.Frontend.Models.View.CheckoutViewModel
 
 <div class="row">
-        <h2>Checkout</h2>
-        <!-- Tag helpers https://docs.microsoft.com/en-US/aspnet/core/mvc/views/tag-helpers/intro?view=aspnetcore-5.0 -->
+    <h2>Checkout</h2>
+    <!-- Tag helpers https://docs.microsoft.com/en-US/aspnet/core/mvc/views/tag-helpers/intro?view=aspnetcore-5.0 -->
 
-            <form class="form" asp-action="Purchase">
-         <div class="form-group">
+    <form class="form" asp-action="Purchase">
+        <div class="form-group">
             <label asp-for="Name">Name</label>
             <span class="text-danger" asp-validation-for="Name"></span>
             <input class="form-control" asp-for="Name" />
@@ -41,6 +41,12 @@
             <input class="form-control" asp-for="CreditCardDate" />
         </div>
         <button type="submit" class="btn btn-primary ml-4 w-50">SUBMIT ORDER</button>
+        <br/><br/><br/><br/><br/><br/>
+        <div class="form-group">
+            <label asp-for="BulkNumber">bulk</label>
+            <span class="text-danger" asp-validation-for="BulkNumber"></span>
+            <input class="form-control" asp-for="BulkNumber" />
+        </div>
     </form>  
 
 </div>

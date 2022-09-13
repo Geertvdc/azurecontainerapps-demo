@@ -11,6 +11,7 @@ param containerRegistryUsername string
 param containerRegistryPassword string = ''
 
 var registryPasswordSecret = 'registry-password'
+var TopicConnectionStringSecret = 'orders-connectionstring'
 
 module environment 'containerApp-environment.bicep' = {
   name: '${deployment().name}-environment'
@@ -106,6 +107,10 @@ module ordering 'containerApp-app.bicep' = {
         name: registryPasswordSecret
         value: containerRegistryPassword
       }
+      {
+        name: TopicConnectionStringSecret
+        value: pubsub.outputs.serviceBusConnectionString
+      }
     ]
     environmentVariables: [
       {
@@ -114,9 +119,36 @@ module ordering 'containerApp-app.bicep' = {
       }
     ]
     scaling: {
-        minReplicas: 0
-        maxReplicas: 1
+      minReplicas: 0
+      maxReplicas: 10
+      rules:[
+        {
+          name: 'queue-based-autoscaling'
+          custom: {
+            type: 'azure-servicebus'
+            metadata: {
+                topicName: 'orders'
+                messageCount: '10'
+                activationMessageCount: '1'
+            }
+            auth: [
+                {
+                  secretRef: TopicConnectionStringSecret
+                  triggerParameter: 'connection'
+                }
+            ]
+          }
+        }
+      ]
     }
+  }
+}
+
+module pubsub 'pubsub.bicep' =  {
+  name: '${appName}-bus'
+  params: {
+    busName: '${appName}Bus'
+    location: location
   }
 }
 
@@ -126,14 +158,6 @@ module cosmosdb 'cosmos.bicep' = {
     accountName: '${appName}-cosmos'
     location: location
     primaryRegion: location
-  }
-}
-
-module pubsub 'pubsub.bicep' =  {
-  name: '${appName}-bus'
-  params: {
-    busName: '${appName}Bus'
-    location: location
   }
 }
 

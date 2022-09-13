@@ -33,8 +33,12 @@ public class PubSubOrderSubmissionService : IOrderSubmissionService
             Town = checkoutViewModel.Town,
             CreditCardExpiryDate = checkoutViewModel.CreditCardDate
         };
-        
-        await orderingClient.PublishEventAsync("pubsub", "orders", order);
+
+        for (var i = 0; i < checkoutViewModel.BulkNumber; i++)
+        {
+            await orderingClient.PublishEventAsync("pubsub", "orders", order);
+        }
+
         return order.OrderId;
     }
 }

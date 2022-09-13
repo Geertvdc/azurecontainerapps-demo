@@ -17,5 +17,7 @@ namespace GloboTicket.Frontend.Models.View
         [CreditCard]
         public string CreditCard { get; set; } = String.Empty;
         public string CreditCardDate { get; set; } = String.Empty;
+
+        public int BulkNumber { get; set; } = 1;
     }
 }
