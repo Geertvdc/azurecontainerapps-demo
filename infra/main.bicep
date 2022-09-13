@@ -55,8 +55,8 @@ module frontend 'containerApp-app.bicep' = {
       }
     ]
     scaling: {
-        minReplicas: 1
-        maxReplicas: 1
+      minReplicas: 1
+      maxReplicas: 1
     }
   }
 }
@@ -85,8 +85,8 @@ module catalog 'containerApp-app.bicep' = {
       }
     ]
     scaling: {
-        minReplicas: 1
-        maxReplicas: 1
+      minReplicas: 1
+      maxReplicas: 1
     }
   }
 }
@@ -121,30 +121,30 @@ module ordering 'containerApp-app.bicep' = {
     scaling: {
       minReplicas: 0
       maxReplicas: 10
-      rules:[
-        {
-          name: 'queue-based-autoscaling'
-          custom: {
-            type: 'azure-servicebus'
-            metadata: {
-                topicName: 'orders'
-                messageCount: '10'
-                activationMessageCount: '1'
-            }
-            auth: [
-                {
-                  secretRef: TopicConnectionStringSecret
-                  triggerParameter: 'connection'
-                }
-            ]
-          }
-        }
-      ]
+      //rules: [
+      //  {
+      //    name: 'queue-based-autoscaling'
+      //    custom: {
+      //      type: 'azure-servicebus'
+      //      metadata: {
+      //        topicName: 'orders'
+      //        messageCount: '10'
+      //        activationMessageCount: '1'
+      //      }
+      //      auth: [
+      //        {
+      //          secretRef: TopicConnectionStringSecret
+      //          triggerParameter: 'connection'
+      //        }
+      //      ]
+      //    }
+      //  }
+      //]
     }
   }
 }
 
-module pubsub 'pubsub.bicep' =  {
+module pubsub 'pubsub.bicep' = {
   name: '${appName}-bus'
   params: {
     busName: '${appName}Bus'
@@ -195,7 +195,6 @@ resource shopstateComponent 'Microsoft.App/managedEnvironments/daprComponents@20
     ]
   }
 }
-
 
 resource pubsubComponent 'Microsoft.App/managedEnvironments/daprComponents@2022-03-01' = {
   name: '${appName}/pubsub'
