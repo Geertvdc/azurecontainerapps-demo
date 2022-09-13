@@ -16,13 +16,15 @@ param secrets array = []
 
 param scaling object
 
+param revisionMode string = 'Single'
+
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
   location: location
   properties: {
     managedEnvironmentId: environmentId
     configuration: {
-      activeRevisionsMode: 'Single'
+      activeRevisionsMode: revisionMode
       secrets: secrets
       registries:[
         {
