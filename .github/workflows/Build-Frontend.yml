@@ -84,7 +84,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            FQDN=$(az container app update \
+            FQDN=$(az containerapp update \
               --resource-group globo-tickets \
               --name frontend \
               --image ${{ needs.build-container.outputs.containerImage-frontend }} \
