@@ -14,9 +14,9 @@ param environmentVariables array
 
 param secrets array = []
 
-param scaling object
-
 param revisionMode string = 'Single'
+
+param scaling object
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
