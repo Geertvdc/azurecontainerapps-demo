@@ -85,19 +85,26 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            FQDN=$(az containerapp update \
+            az containerapp update \
               --resource-group globo-tickets \
               --name frontend \
               --image ${{ needs.build-container.outputs.containerImage-frontend }} \
               --revision-suffix ${{ needs.set-env.outputs.version }} \
-              --query properties.latestRevisionFqdn)
+              --output tsv
+              --query properties.latestRevisionFqdn
+            FQDN=$(az containerapp revision show \
+              --resource-group globo-tickets \
+              --name frontend \
+              --revision frontend--${{ needs.set-env.outputs.version }}
+              --query "properties.fqdn" \
+              --output tsv)
             echo "FQDN=$FQDN" >> $GITHUB_ENV
       - uses: mshick/add-pr-comment@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           message: |
-            New app revision created at: ${{ env.FQDN}}
+            New app revision created at: [${{ env.FQDN}}](${{ env.FQDN}})
   close-pr:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
