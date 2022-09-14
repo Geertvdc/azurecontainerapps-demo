@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
     paths:
-      - 'frontend/*'
+      - 'frontend/**'
   workflow_dispatch:
 
 env:
