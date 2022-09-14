@@ -34,6 +34,7 @@ module frontend 'containerApp-app.bicep' = {
     containerRegistry: containerRegistry
     registryPassword: registryPasswordSecret
     containerRegistryUsername: containerRegistryUsername
+    revisionMode: 'Multiple'
     secrets: [
       {
         name: registryPasswordSecret
