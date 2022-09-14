@@ -104,5 +104,5 @@ jobs:
                 orderingImage='${{ needs.package-services.outputs.containerImage-ordering }}' \
                 containerRegistry=${{ env.REGISTRY }} \
                 containerRegistryUsername=${{ github.actor }} \
-                containerRegistryPassword=${{ secrets.GITHUB_TOKEN }} \
+                containerRegistryPassword=${{ secrets.GHCR_PULLCREDENTIALS }} \
                 appName='globotickets' \
