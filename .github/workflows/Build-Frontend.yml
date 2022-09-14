@@ -87,7 +87,7 @@ jobs:
             FQDN=$(az container app update \
               --resource-group globo-tickets \
               --name frontend \
-              --image '${{ needs.package-services.outputs.containerImage-frontend }}' \
+              --image '${{ needs.build-container.outputs.containerImage-frontend }}' \
               --query properties.latestRevisionFqdn)
             echo "::set-env name=FQDN::$FQDN"
       - uses: mshick/add-pr-comment@v1
