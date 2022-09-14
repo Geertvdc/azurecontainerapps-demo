@@ -1,14 +1,14 @@
 name: Build and Deploy
 on:
-  push:
-    branches:
-      - 'dapr'
-      - 'dockercompose'
-    paths:
-      - 'frontend/*'
-      - 'catalog/*'
-      - 'ordering/*'
-      - 'infra/*'  
+#   push:
+#     branches:
+#       - 'dapr'
+#       - 'dockercompose'
+#     paths:
+#       - 'frontend/*'
+#       - 'catalog/*'
+#       - 'ordering/*'
+#       - 'infra/*'  
   workflow_dispatch:
 
 env:
