@@ -104,7 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           message: |
-            New app revision created at: [${{ env.FQDN}}](${{ env.FQDN}})
+            New app revision created at: [${{ env.FQDN}}](https://${{ env.FQDN}})
   close-pr:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
@@ -120,6 +120,6 @@ jobs:
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            OLDREVISION=$( az containerapp revision list  --output tsv --query "[?properties.trafficWeight==\`100\`].name | [0]")
+            OLDREVISION=$( az containerapp revision list -n frontend -g globo-tickets --output tsv --query "[?properties.trafficWeight==\`100\`].name | [0]")
             az containerapp ingress traffic set -n frontend -g globo-tickets --revision-weight latest=100
-            az containerapp revision deactivate -g globo-tickets --revision $OLDREVISION
+            az containerapp revision deactivate -n frontend -g globo-tickets --revision $OLDREVISION
