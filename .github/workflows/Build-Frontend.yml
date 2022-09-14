@@ -90,7 +90,7 @@ jobs:
               --name frontend \
               --image ${{ needs.build-container.outputs.containerImage-frontend }} \
               --revision-suffix ${{ needs.set-env.outputs.version }} \
-              --output tsv
+              --output tsv \
               --query properties.latestRevisionFqdn
             FQDN=$(az containerapp revision show \
               --resource-group globo-tickets \
