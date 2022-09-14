@@ -73,7 +73,9 @@ jobs:
           echo ::set-output name=image-frontend::${{ env.REGISTRY }}/$GITHUB_REPOSITORY/frontend:sha-${{ needs.set-env.outputs.version }} | tr '[:upper:]' '[:lower:]'
   deploy:
     runs-on: ubuntu-latest
-    needs: build-container
+    needs: 
+     - build-container
+     - set-env
     steps:
       - name: Azure Login
         uses: azure/login@v1
@@ -89,6 +91,7 @@ jobs:
               --resource-group globo-tickets \
               --name frontend \
               --image ${{ needs.build-container.outputs.containerImage-frontend }} \
+              --revision-suffix ${{ needs.set-env.outputs.version }} \
               --query properties.latestRevisionFqdn)
             echo "FQDN=$FQDN" >> $GITHUB_ENV
       - uses: mshick/add-pr-comment@v1
@@ -97,6 +100,22 @@ jobs:
         with:
           message: |
             New app revision created at: ${{ env.FQDN}}
+  close-pr:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_SP }}
+      - name: Deploy revision
+        id: deploy
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az config set extension.use_dynamic_install=yes_without_prompt
+            OLDREVISION=$( az containerapp revision list  --output tsv --query "[?properties.trafficWeight==\`100\`].name | [0]")
+            az containerapp ingress traffic set -n frontend -g globo-tickets --revision-weight latest=100
+            az containerapp revision deactivate -g globo-tickets --revision $OLDREVISION
             
-
-      
