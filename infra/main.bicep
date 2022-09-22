@@ -122,25 +122,25 @@ module ordering 'containerApp-app.bicep' = {
     scaling: {
       minReplicas: 0
       maxReplicas: 10
-      //rules: [
-      //  {
-      //    name: 'queue-based-autoscaling'
-      //    custom: {
-      //      type: 'azure-servicebus'
-      //      metadata: {
-      //        topicName: 'orders'
-      //        messageCount: '10'
-      //        activationMessageCount: '1'
-      //      }
-      //      auth: [
-      //        {
-      //          secretRef: TopicConnectionStringSecret
-      //          triggerParameter: 'connection'
-      //        }
-      //      ]
-      //    }
-      //  }
-      //]
+      rules: [
+       {
+         name: 'queue-based-autoscaling'
+         custom: {
+           type: 'azure-servicebus'
+           metadata: {
+             topicName: 'orders'
+             messageCount: '10'
+             activationMessageCount: '1'
+           }
+           auth: [
+             {
+               secretRef: TopicConnectionStringSecret
+               triggerParameter: 'connection'
+             }
+           ]
+         }
+       }
+      ]
     }
   }
 }

@@ -27,26 +27,26 @@ resource frontend 'Microsoft.App/containerApps@2022-03-01' = {
   location: location
   properties: {
     managedEnvironmentId: containerAppEnv.id
-//    configuration: {
-//      activeRevisionsMode: revisionMode
-//      secrets: secrets
-//      registries:[
-//        {
-//          server: containerRegistry
-//          username: containerRegistryUsername
-//          passwordSecretRef: registryPassword
-//        }
-//      ]
-//      ingress: {
-//        external: ingressIsExternal
-//        targetPort: 80
-//      }
-//      dapr: {
-//        enabled: true
-//        appPort: 80
-//        appId: containerAppName
-//      }
-//    }
+    configuration: {
+      activeRevisionsMode: revisionMode
+      secrets: secrets
+      registries:[
+        {
+          server: containerRegistry
+          username: containerRegistryUsername
+          passwordSecretRef: registryPassword
+        }
+      ]
+      ingress: {
+        external: ingressIsExternal
+        targetPort: 80
+      }
+      dapr: {
+        enabled: true
+        appPort: 80
+        appId: containerAppName
+      }
+    }
     template: {
       containers: [
         {

@@ -3,7 +3,7 @@ CATALOG_IMAGE="ghcr.io/geertvdc/azurecontainerapps-demo/catalog:dapr"
 ORDERING_IMAGE="ghcr.io/geertvdc/azurecontainerapps-demo/ordering:dapr"
 REGISTRY_NAME="ghcr.io"
 REGISTRY_USER="geertvdc"
-REGISTRY_PASSWORD=$CR_PATH
+REGISTRY_PASSWORD="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"
 
 az deployment group create -g "globo-tickets" -f ./infra/main.bicep \
     -p \
