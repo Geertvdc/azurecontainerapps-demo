@@ -89,13 +89,13 @@ jobs:
               --resource-group globo-tickets \
               --name frontend \
               --image ${{ needs.build-container.outputs.containerImage-frontend }} \
-              --revision-suffix ${{ needs.set-env.outputs.version }} \
+              --revision-suffix v-${{ needs.set-env.outputs.version }} \
               --output tsv \
               --query properties.latestRevisionFqdn
             FQDN=$(az containerapp revision show \
               --resource-group globo-tickets \
               --name frontend \
-              --revision frontend--${{ needs.set-env.outputs.version }} \
+              --revision frontend--v-${{ needs.set-env.outputs.version }} \
               --query "properties.fqdn" \
               --output tsv)
             echo "FQDN=$FQDN" >> $GITHUB_ENV
