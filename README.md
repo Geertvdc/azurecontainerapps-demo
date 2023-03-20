@@ -1,5 +1,5 @@
 # azurecontainerapps-demo
-Demo application using Azure Container apps for conference talks. Also uses dapr &amp; Keda
+Demo application using Azure Container apps for conference talks. Also uses DAPR &amp; Keda
 
 ## Logging cli commands
 
