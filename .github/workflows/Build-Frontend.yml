@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
     paths:
-      - 'frontend/*'
+      - 'frontend/**'
   workflow_dispatch:
 
 env:
@@ -21,7 +21,7 @@ jobs:
     steps:
       - id: main
         run: |
-          echo ::set-output name=version::$(echo ${GITHUB_SHA} | cut -c1-7)
+          echo ::set-output name=version::$(echo ${GITHUB_SHA::7})
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=repository::$GITHUB_REPOSITORY
   build-container:
@@ -39,7 +39,6 @@ jobs:
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ${{ env.REGISTRY }}
@@ -58,12 +57,75 @@ jobs:
             type=semver,pattern={{major}}
             type=ref,event=branch
             type=sha
-      # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           file: "frontend/Dockerfile"
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Output image tag
+        id: image-tag
+        run: |
+          echo ::set-output name=image-frontend::${{ env.REGISTRY }}/$GITHUB_REPOSITORY/frontend:sha-${{ needs.set-env.outputs.version }} | tr '[:upper:]' '[:lower:]'
+  deploy:
+    runs-on: ubuntu-latest
+    environment: azure
+    needs: 
+     - build-container
+     - set-env
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy revision
+        id: deploy
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az containerapp update \
+              --resource-group globo-tickets \
+              --name frontend \
+              --image ${{ needs.build-container.outputs.containerImage-frontend }} \
+              --revision-suffix v-${{ needs.set-env.outputs.version }} \
+              --output tsv \
+              --query properties.latestRevisionFqdn
+            FQDN=$(az containerapp revision show \
+              --resource-group globo-tickets \
+              --name frontend \
+              --revision frontend--v-${{ needs.set-env.outputs.version }} \
+              --query "properties.fqdn" \
+              --output tsv)
+            echo "FQDN=$FQDN" >> $GITHUB_ENV
+      - uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          message: |
+            New app revision created at: [${{ env.FQDN}}](https://${{ env.FQDN}})
+  close-pr:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    environment: azure
+    runs-on: ubuntu-latest
+    name: Close Pull Request
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy revision
+        id: deploy
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az config set extension.use_dynamic_install=yes_without_prompt
+            OLDREVISION=$( az containerapp revision list -n frontend -g globo-tickets --output tsv --query "[?properties.trafficWeight==\`100\`].name | [0]")
+            az containerapp ingress traffic set -n frontend -g globo-tickets --revision-weight latest=100
+            az containerapp revision deactivate -n frontend -g globo-tickets --revision $OLDREVISION
