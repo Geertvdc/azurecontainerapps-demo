@@ -88,20 +88,20 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Deploy revision
         id: deploy
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2.1.0
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp update \
               --resource-group globo-tickets \
-              --name frontend \
+              --name globotickets-frontend \
               --image ${{ needs.build-container.outputs.containerImage-frontend }} \
               --revision-suffix v-${{ needs.set-env.outputs.version }} \
               --output tsv \
               --query properties.latestRevisionFqdn
             FQDN=$(az containerapp revision show \
               --resource-group globo-tickets \
-              --name frontend \
+              --name globotickets-frontend \
               --revision frontend--v-${{ needs.set-env.outputs.version }} \
               --query "properties.fqdn" \
               --output tsv)
@@ -126,10 +126,10 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Deploy revision
         id: deploy
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2.1.0
         with:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
-            OLDREVISION=$( az containerapp revision list -n frontend -g globo-tickets --output tsv --query "[?properties.trafficWeight==\`100\`].name | [0]")
-            az containerapp ingress traffic set -n frontend -g globo-tickets --revision-weight latest=100
-            az containerapp revision deactivate -n frontend -g globo-tickets --revision $OLDREVISION
+            OLDREVISION=$( az containerapp revision list -n globotickets-frontend -g globo-tickets --output tsv --query "[?properties.trafficWeight==\`100\`].name | [0]")
+            az containerapp ingress traffic set -n globotickets-frontend -g globo-tickets --revision-weight latest=100
+            az containerapp revision deactivate -n globotickets-frontend -g globo-tickets --revision $OLDREVISION
