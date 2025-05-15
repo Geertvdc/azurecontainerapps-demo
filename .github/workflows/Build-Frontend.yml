@@ -96,12 +96,14 @@ jobs:
               --resource-group globo-tickets \
               --name globotickets-frontend \
               --image ${{ needs.build-container.outputs.containerImage-frontend }} \
+              --revision-suffix v-${{ needs.set-env.outputs.version }} \
               --output tsv \
               --query properties.latestRevisionFqdn
             FQDN=$(az containerapp revision show \
               --resource-group globo-tickets \
               --name globotickets-frontend \
               --query "properties.fqdn" \
+              --revision v-${{ needs.set-env.outputs.version }} \
               --output tsv)
             echo "FQDN=$FQDN" >> $GITHUB_ENV
       - uses: mshick/add-pr-comment@v1
