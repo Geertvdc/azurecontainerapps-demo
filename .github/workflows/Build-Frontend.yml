@@ -6,6 +6,10 @@ on:
       - 'frontend/**'
   workflow_dispatch:
 
+permissions:
+  id-token: write    
+  contents: read 
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
