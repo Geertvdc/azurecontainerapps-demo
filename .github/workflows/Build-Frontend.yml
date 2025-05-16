@@ -103,7 +103,7 @@ jobs:
               --resource-group globo-tickets \
               --name globotickets-frontend \
               --query "properties.fqdn" \
-              --revision v-${{ needs.set-env.outputs.version }} \
+              --revision globotickets-frontend--v-${{ needs.set-env.outputs.version }} \
               --output tsv)
             echo "FQDN=$FQDN" >> $GITHUB_ENV
       - uses: mshick/add-pr-comment@v1
