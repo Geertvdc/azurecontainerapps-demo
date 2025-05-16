@@ -9,6 +9,7 @@ on:
 permissions:
   id-token: write    
   contents: read 
+  pull-requests: write
 
 env:
   REGISTRY: ghcr.io
@@ -79,8 +80,6 @@ jobs:
     needs: 
      - build-container
      - set-env
-    permissions:
-      pull-requests: write
     steps:
       - name: Azure Login
         uses: azure/login@v2
